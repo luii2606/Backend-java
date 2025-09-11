@@ -7,6 +7,10 @@ public class DetalleOrdenProducto {
     private int cantidad;
     private double subtotal;
 
+    // 🔹 Extras para mostrar en frontend
+    private String nombre_producto;
+    private double precio;
+
     public DetalleOrdenProducto() {}
 
     public DetalleOrdenProducto(int id_orden, int id_producto, int cantidad, double subtotal) {
@@ -31,5 +35,10 @@ public class DetalleOrdenProducto {
 
     public double getSubtotal() { return subtotal; }
     public void setSubtotal(double subtotal) { this.subtotal = subtotal; }
-}
 
+    public String getNombre_producto() { return nombre_producto; }
+    public void setNombre_producto(String nombre_producto) { this.nombre_producto = nombre_producto; }
+
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
+}

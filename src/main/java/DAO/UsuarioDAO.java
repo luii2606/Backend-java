@@ -75,8 +75,8 @@ public class UsuarioDAO {
     
     // Insertar usuario sin rol ni estado
 public static boolean insertarUsuarioSimple(Usuarios u) {
-    String sql = "INSERT INTO usuarios (nombre, contrasena, correo, telefono, id_tipo_usuario,id_roles, id_Estado_usuarios) " +
-                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO usuarios (nombre, contrasena, correo, telefono, id_tipo_usuario, id_Estado_usuarios) " +
+                 "VALUES (?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = ConexionDB.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -86,8 +86,7 @@ public static boolean insertarUsuarioSimple(Usuarios u) {
         pstmt.setString(3, u.getCorreo());
         pstmt.setString(4, u.getTelefono());
         pstmt.setInt(5, u.getId_tipo_usuario());
-        pstmt.setInt(6, u.getId_roles());
-        pstmt.setInt(7, u.getId_estado_usuarios());
+        pstmt.setInt(6, u.getId_estado_usuarios());
         
 
         return pstmt.executeUpdate() > 0;

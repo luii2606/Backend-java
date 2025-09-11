@@ -81,6 +81,14 @@ public Map<String, Object> login(String correo, String contrasena) {
         return usuarioDAO.insertarUsuarioSimple(usuario);
     }
     
+    public boolean RegistrarTrabajador (Usuarios usuario){
+                String hashed = BCrypt.hashpw(usuario.getContrasena(), BCrypt.gensalt(12));
+        usuario.setContrasena(hashed);
+
+        // Insertar usuario mediante DAO
+        return usuarioDAO.insertarUsuario(usuario);
+    }
+    
         /**
      * ✅ Valida un Access Token y devuelve los claims.
      * Sirve para verificar si un usuario sigue autenticado.

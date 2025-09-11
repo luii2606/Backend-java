@@ -42,36 +42,39 @@ public class AuthControlador extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+@Override
+protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException, IOException {
 
-        String path = req.getPathInfo(); // ejemplo: /login, /refresh, /register
-        addCorsHeaders(resp);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
+    String path = req.getPathInfo(); // ejemplo: /login, /refresh, /register
+    addCorsHeaders(resp);
+    resp.setContentType("application/json");
+    resp.setCharacterEncoding("UTF-8");
 
-        if (path == null) {
+    if (path == null) {
+        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        resp.getWriter().write("{\"error\":\"Ruta no encontrada\"}");
+        return;
+    }
+
+    switch (path) {
+        case "/login":
+            login(req, resp);
+            break;
+        case "/refresh":
+            refresh(req, resp);
+            break;
+        case "/register":
+            register(req, resp);
+            break;
+        case "/register-trabajador":
+            registerTrabajador(req, resp);
+            break;
+        default:
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().write("{\"error\":\"Ruta no encontrada\"}");
-            return;
-        }
-
-        switch (path) {
-            case "/login":
-                login(req, resp);
-                break;
-            case "/refresh":
-                refresh(req, resp);
-                break;
-            case "/register":
-                register(req, resp);
-                break;
-            default:
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                resp.getWriter().write("{\"error\":\"Ruta no encontrada\"}");
-        }
     }
+}
 
     // 🔹 GET: validate, me
     @Override
@@ -169,6 +172,8 @@ public class AuthControlador extends HttpServlet {
             resp.getWriter().write("{\"error\":\"No se pudo registrar el usuario\"}");
         }
     }
+    
+    
 
     // 🔑 validar access token
     private void validate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -227,6 +232,34 @@ public class AuthControlador extends HttpServlet {
             resp.getWriter().write("{\"error\":\"Token inválido o expirado\"}");
         }
     }
+    /**
+ * Registro de un nuevo trabajador: recibe JSON con datos del trabajador
+ */
+private void registerTrabajador(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    BufferedReader reader = req.getReader();
+    Usuarios nuevoTrabajador = new Gson().fromJson(reader, Usuarios.class);
+
+    // valores por defecto
+if (nuevoTrabajador.getId_estado_usuarios() == 0) {
+    nuevoTrabajador.setId_estado_usuarios(4); // disponible
+}
+if (nuevoTrabajador.getId_tipo_usuario() == 0) {
+    nuevoTrabajador.setId_tipo_usuario(3); // trabajador
+}
+
+
+    boolean creado = authServicio.RegistrarTrabajador(nuevoTrabajador);
+
+    if (creado) {
+        resp.setStatus(HttpServletResponse.SC_CREATED);
+        resp.getWriter().write("{\"message\":\"Trabajador registrado con éxito\"}");
+    } else {
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        resp.getWriter().write("{\"error\":\"No se pudo registrar el trabajador\"}");
+    }
+}
+
+    
 }
 
 

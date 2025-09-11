@@ -50,7 +50,7 @@ public class OrdenDAO {
              }
          } else {
              System.out.println("⚠️ Orden insertada sin productos (opcional)");
-         }
+         }  
          
                 // 🚨 Validar disponibilidad antes de insertar
           if (existeCita(orden.getId_trabajador(), orden.getFecha(), orden.getHora())) {
@@ -105,7 +105,7 @@ public class OrdenDAO {
     // ✅ Buscar órdenes por cliente
     public static List<Orden> listarOrdenesPorCliente(int idCliente) {
         List<Orden> lista = new ArrayList<>();
-        String sql = "SELECT o.id, o.fecha_servicio, o.hora_servicio, " +
+        String sql = "SELECT o.id, o.fecha_servicio, o.hora_servicio, o.id_tipo_modalidad, " +
                      "s.nombre AS servicio_nombre, " +
                      "eo.nombre AS estado_nombre, " +
                      "uc.nombre AS usuario_nombre, " +
@@ -116,7 +116,7 @@ public class OrdenDAO {
                      "INNER JOIN usuarios_orden uo ON o.id_usuarios_orden = uo.id " +
                      "INNER JOIN usuarios uc ON uo.id_usuario_cliente = uc.id " +
                      "INNER JOIN usuarios ut ON uo.id_usuario_trabajador = ut.id " +
-                     "WHERE uo.id_usuario_cliente = ?";
+                     "WHERE uc.id = ?"; 
 
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -137,7 +137,7 @@ public class OrdenDAO {
     // ✅ Buscar órdenes por trabajador
     public static List<Orden> listarOrdenesPorTrabajador(int idTrabajador) {
         List<Orden> lista = new ArrayList<>();
-        String sql = "SELECT o.id, o.fecha_servicio, o.hora_servicio, " +
+        String sql = "SELECT o.id, o.fecha_servicio, o.hora_servicio, o.id_tipo_modalidad, " +
                      "s.nombre AS servicio_nombre, " +
                      "eo.nombre AS estado_nombre, " +
                      "uc.nombre AS usuario_nombre, " +
@@ -165,6 +165,41 @@ public class OrdenDAO {
         }
         return lista;
     }
+    
+    // ✅ Listar órdenes por trabajador y fecha
+public static List<Orden> listarOrdenesPorTrabajadorYFecha(int idTrabajador, String fecha) {
+    List<Orden> lista = new ArrayList<>();
+    String sql = "SELECT o.id, o.fecha_servicio, o.hora_servicio, id_tipo_modalidad, " +
+                 "s.nombre AS servicio_nombre, " +
+                 "eo.nombre AS estado_nombre, " +
+                 "uc.nombre AS usuario_nombre, " +
+                 "ut.nombre AS trabajador_nombre " +
+                 "FROM orden o " +
+                 "INNER JOIN servicios s ON o.id_servicios = s.id " +
+                 "INNER JOIN estado_orden eo ON o.id_Estado_orden = eo.id " +
+                 "INNER JOIN usuarios_orden uo ON o.id_usuarios_orden = uo.id " +
+                 "INNER JOIN usuarios uc ON uo.id_usuario_cliente = uc.id " +
+                 "INNER JOIN usuarios ut ON uo.id_usuario_trabajador = ut.id " +
+                 "WHERE uo.id_usuario_trabajador = ? AND o.fecha_servicio = ?";
+
+    try (Connection con = ConexionDB.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, idTrabajador);
+        ps.setString(2, fecha);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                lista.add(mapOrden(rs));
+            }
+        }
+    } catch (SQLException e) {
+        System.out.println("❌ Error al listar órdenes por trabajador y fecha: " + e.getMessage());
+    }
+    return lista;
+}
+        
+        
+
+
     
     // ✅ Verificar si un trabajador ya tiene una cita en esa fecha y hora
 public static boolean existeCita(int idTrabajador, String fecha, String hora) {
@@ -215,20 +250,54 @@ public static boolean existeCita(int idTrabajador, String fecha, String hora) {
           // Actualizar el estado de una orden por nombre de estado
     public static boolean actualizarEstadoOrden(int idOrden, String nombreEstado) throws Exception {
         String sql = """
-            UPDATE orden o
-            JOIN Estado_orden eo ON eo.nombre = ?
-            SET o.id_Estado_orden = eo.id
-            WHERE o.id = ?
+             UPDATE orden o
+                    SET o.id_Estado_orden = (
+                        SELECT eo.id FROM estado_orden eo WHERE eo.nombre = ?
+                    )
+                    WHERE o.id = ?
         """;
 
         try (Connection conn = ConexionDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, nombreEstado); // "confirmado" o "cancelado"
+            ps.setString(1, nombreEstado); 
             ps.setInt(2, idOrden);
 
             return ps.executeUpdate() > 0;
         }
     }
+    
+    public static List<String> listarEstados() {
+    List<String> estados = new ArrayList<>();
+    String sql = "SELECT nombre FROM estado_orden ORDER BY id";
+
+    try (Connection conn = ConexionDB.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            estados.add(rs.getString("nombre"));
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return estados;
+}
+
+    
+    public static boolean eliminarOrden(int idOrden) {
+    String sql = "DELETE FROM orden WHERE id = ?";
+    try (Connection conn = ConexionDB.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, idOrden);
+        int filas = stmt.executeUpdate();
+        return filas > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
 
 
 
@@ -242,6 +311,7 @@ public static boolean existeCita(int idTrabajador, String fecha, String hora) {
         o.setId_modalidad(rs.getInt("id_tipo_modalidad"));
         o.setUsuario_nombre(rs.getString("usuario_nombre"));
         o.setTrabajador_nombre(rs.getString("trabajador_nombre"));
+        o.setEstado_nombre(rs.getString("estado_nombre"));
         return o;
     }
 }
