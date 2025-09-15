@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class ConexionDB {
     //URL de conexión a la base de datos(host, puerto y nombre de la base de datos)
-    private static final String URL = "jdbc:mysql://localhost:3306/proyectoacej";
+    private static final String URL = "jdbc:mysql://localhost:3306/proyectoacej2";
     
     //credenciales de acceso a la base de datos
     private static final String USER = "valemidx";

@@ -43,7 +43,7 @@ public Map<String, Object> login(String correo, String contrasena) {
     respuesta.put("access_token", accessToken);
     respuesta.put("refresh_token", refreshToken);
     respuesta.put("id_usuario", u.getId());
-    respuesta.put("id_tipo_usuario", u.getId_tipo_usuario()); // 👈 importante para redirección
+    respuesta.put("id_roles", u.getId_roles()); // 👈 importante para redirección
     respuesta.put("correo", u.getCorreo());
 
     return respuesta;
@@ -87,6 +87,9 @@ public Map<String, Object> login(String correo, String contrasena) {
 
         // Insertar usuario mediante DAO
         return usuarioDAO.insertarUsuario(usuario);
+    }
+     public boolean existeCorreo(String correo) {
+        return usuarioDAO.buscarPorCorreo(correo) != null;
     }
     
         /**

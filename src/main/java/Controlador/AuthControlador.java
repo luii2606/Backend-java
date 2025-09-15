@@ -3,6 +3,7 @@ package Controlador;
 import Servicio.AuthServicio;
 import Modelo.Usuarios;
 import Seguridad.JWTUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -151,15 +152,22 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp)
      * Registro de un nuevo usuario: recibe JSON con datos del usuario
      */
     private void register(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        BufferedReader reader = req.getReader();
-        Usuarios nuevoUsuario = new Gson().fromJson(reader, Usuarios.class);
+        ObjectMapper mapper = new ObjectMapper();
+        Usuarios nuevoUsuario = mapper.readValue(req.getInputStream(), Usuarios.class);
+
 
         // valores por defecto
-        if (nuevoUsuario.getId_tipo_usuario() == 0) {
-            nuevoUsuario.setId_tipo_usuario(2); // cliente
+        if (nuevoUsuario.getId_roles() == 0) {
+            nuevoUsuario.setId_roles(2); // cliente
         }
         if (nuevoUsuario.getId_estado_usuarios() == 0) {
-            nuevoUsuario.setId_estado_usuarios(4); // disponible
+            nuevoUsuario.setId_estado_usuarios(1); // disponible
+        }
+            // Verificar si ya existe el correo ANTES de registrar
+        if (authServicio.existeCorreo(nuevoUsuario.getCorreo())) {
+            resp.setStatus(HttpServletResponse.SC_CONFLICT); // 409 = Conflicto
+            resp.getWriter().write("{\"error\":\"El correo ya está registrado\"}");
+            return;
         }
 
         boolean creado = authServicio.registrarUsuario(nuevoUsuario);
@@ -219,7 +227,7 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             data.put("id", usuario.getId());
             data.put("nombre", usuario.getNombre());
             data.put("correo", usuario.getCorreo());
-            data.put("id_tipo_usuario", usuario.getId_tipo_usuario());
+            data.put("id_roles", usuario.getId_roles());
             data.put("permisos", permisos);
 
             String json = new Gson().toJson(data);
@@ -241,10 +249,10 @@ private void registerTrabajador(HttpServletRequest req, HttpServletResponse resp
 
     // valores por defecto
 if (nuevoTrabajador.getId_estado_usuarios() == 0) {
-    nuevoTrabajador.setId_estado_usuarios(4); // disponible
+    nuevoTrabajador.setId_estado_usuarios(1); // disponible
 }
-if (nuevoTrabajador.getId_tipo_usuario() == 0) {
-    nuevoTrabajador.setId_tipo_usuario(3); // trabajador
+if (nuevoTrabajador.getId_roles() == 0) {
+    nuevoTrabajador.setId_roles(3); // trabajador
 }
 
 

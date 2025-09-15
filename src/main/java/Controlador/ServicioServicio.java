@@ -36,9 +36,9 @@ public class ServicioServicio {
 
    // Método GET para obtener servicios filtrados por código de tipo de rol
     @GET
-    @Path("/rol/{id_roles}") // Ruta con parámetro para el código del tipo de rol
-    public Response obtenerPorRol(@PathParam("id_roles") int id_roles) {
-        List<Servicio> servicios = ServicioDAO.obtenerPorRol(id_roles); // Obtiene servicios filtrados
+    @Path("/rol/{id_tipo_usuario}") // Ruta con parámetro para el código del tipo de rol
+    public Response obtenerPorRol(@PathParam("id_tipo_usuario") int id_tipo_usuario) {
+        List<Servicio> servicios = ServicioDAO.obtenerPorRol(id_tipo_usuario); // Obtiene servicios filtrados
         return addCorsHeaders(Response.ok(servicios)).build(); // Retorna respuesta con servicios filtrados y CORS
     }
 }

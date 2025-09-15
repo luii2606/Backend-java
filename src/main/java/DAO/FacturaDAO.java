@@ -104,6 +104,7 @@ public class FacturaDAO {
 
         return factura;
     }
+    
     public static List<FacturaDetalle> listarFacturasPorFecha(String fecha) {
     List<FacturaDetalle> lista = new ArrayList<>();
         String sql = "SELECT \n" +

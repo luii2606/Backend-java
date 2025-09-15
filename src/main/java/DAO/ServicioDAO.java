@@ -36,7 +36,7 @@ public class ServicioDAO {
                 s.setNombre(rs.getString("nombre"));      
                 s.setDescripcion(rs.getString("descripcion")); 
                 s.setPrecio(rs.getDouble("precio"));      
-                s.setId_roles(rs.getInt("id_roles"));
+                s.setId_tipo_usuario(rs.getInt("id_tipo_usuario"));
                 lista.add(s);
             }
 
@@ -51,15 +51,15 @@ public class ServicioDAO {
      * @param id_roles ID del rol que se usará para filtrar.
      * @return Lista de objetos Servicio asociados a ese rol.
      */
-    public static List<Servicio> obtenerPorRol(int id_roles) {
+    public static List<Servicio> obtenerPorRol(int id_tipo_usuario) {
         List<Servicio> lista = new ArrayList<>();
 
-        String sql = "SELECT * FROM servicios WHERE id_roles = ?";
+        String sql = "SELECT * FROM servicios WHERE id_tipo_usuario = ?";
 
         try (Connection conn = ConexionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, id_roles);
+            stmt.setInt(1, id_tipo_usuario);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -68,7 +68,7 @@ public class ServicioDAO {
                     s.setNombre(rs.getString("nombre"));      
                     s.setDescripcion(rs.getString("descripcion")); 
                     s.setPrecio(rs.getDouble("precio"));      
-                    s.setId_roles(rs.getInt("id_roles"));
+                    s.setId_tipo_usuario(rs.getInt("id_tipo_usuario"));
                     lista.add(s);
                 }
             }

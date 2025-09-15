@@ -25,7 +25,7 @@ public class RolDAO {
         List<Rol> lista = new ArrayList<>();
 
         // Consulta SQL para seleccionar todos los registros de roles
-        String sql = "SELECT id, nombre FROM roles";
+        String sql = "SELECT id, nombre FROM tipo_usuario";
 
         // Try-with-resources: garantiza el cierre automático de conexión, statement y resultset
         try (Connection conn = ConexionDB.getConnection();

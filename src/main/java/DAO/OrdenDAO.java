@@ -105,18 +105,30 @@ public class OrdenDAO {
     // ✅ Buscar órdenes por cliente
     public static List<Orden> listarOrdenesPorCliente(int idCliente) {
         List<Orden> lista = new ArrayList<>();
-        String sql = "SELECT o.id, o.fecha_servicio, o.hora_servicio, o.id_tipo_modalidad, " +
-                     "s.nombre AS servicio_nombre, " +
-                     "eo.nombre AS estado_nombre, " +
-                     "uc.nombre AS usuario_nombre, " +
-                     "ut.nombre AS trabajador_nombre " +
-                     "FROM orden o " +
-                     "INNER JOIN servicios s ON o.id_servicios = s.id " +
-                     "INNER JOIN estado_orden eo ON o.id_Estado_orden = eo.id " +
-                     "INNER JOIN usuarios_orden uo ON o.id_usuarios_orden = uo.id " +
-                     "INNER JOIN usuarios uc ON uo.id_usuario_cliente = uc.id " +
-                     "INNER JOIN usuarios ut ON uo.id_usuario_trabajador = ut.id " +
-                     "WHERE uc.id = ?"; 
+       String sql = "SELECT " +
+             "o.id, " +
+             "o.fecha_servicio, " +
+             "o.hora_servicio, " +
+             "o.id_tipo_modalidad, " +
+             "tm.nombre AS modalidad_nombre, " +          // 🔹 nombre modalidad
+             "o.id_servicios, " +
+             "s.nombre AS servicio_nombre, " +
+             "o.id_Estado_orden, " +
+             "eo.nombre AS estado_nombre, " +
+             "o.id_usuarios_orden, " +
+             "uc.id AS id_usuario, " +                    // 🔹 id cliente
+             "uc.nombre AS usuario_nombre, " +
+             "ut.id AS id_trabajador, " +                 // 🔹 id trabajador
+             "ut.nombre AS trabajador_nombre " +
+             "FROM orden o " +
+             "INNER JOIN servicios s ON o.id_servicios = s.id " +
+             "INNER JOIN estado_orden eo ON o.id_Estado_orden = eo.id " +
+             "INNER JOIN usuarios_orden uo ON o.id_usuarios_orden = uo.id " +
+             "INNER JOIN usuarios uc ON uo.id_usuario_cliente = uc.id " +
+             "INNER JOIN usuarios ut ON uo.id_usuario_trabajador = ut.id " +
+             "INNER JOIN tipo_modalidad tm ON o.id_tipo_modalidad = tm.id " + // 🔹 join modalidad
+             "WHERE uc.id = ?";
+
 
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -137,18 +149,29 @@ public class OrdenDAO {
     // ✅ Buscar órdenes por trabajador
     public static List<Orden> listarOrdenesPorTrabajador(int idTrabajador) {
         List<Orden> lista = new ArrayList<>();
-        String sql = "SELECT o.id, o.fecha_servicio, o.hora_servicio, o.id_tipo_modalidad, " +
-                     "s.nombre AS servicio_nombre, " +
-                     "eo.nombre AS estado_nombre, " +
-                     "uc.nombre AS usuario_nombre, " +
-                     "ut.nombre AS trabajador_nombre " +
-                     "FROM orden o " +
-                     "INNER JOIN servicios s ON o.id_servicios = s.id " +
-                     "INNER JOIN estado_orden eo ON o.id_Estado_orden = eo.id " +
-                     "INNER JOIN usuarios_orden uo ON o.id_usuarios_orden = uo.id " +
-                     "INNER JOIN usuarios uc ON uo.id_usuario_cliente = uc.id " +
-                     "INNER JOIN usuarios ut ON uo.id_usuario_trabajador = ut.id " +
-                     "WHERE uo.id_usuario_trabajador = ?";
+        String sql = "SELECT " +
+             "o.id, " +
+             "o.fecha_servicio, " +
+             "o.hora_servicio, " +
+             "o.id_tipo_modalidad, " +
+             "tm.nombre AS modalidad_nombre, " +
+             "o.id_servicios, " +
+             "s.nombre AS servicio_nombre, " +
+             "o.id_Estado_orden, " +
+             "eo.nombre AS estado_nombre, " +
+             "o.id_usuarios_orden, " +
+             "uc.id AS id_usuario, " +
+             "uc.nombre AS usuario_nombre, " +
+             "ut.id AS id_trabajador, " +
+             "ut.nombre AS trabajador_nombre " +
+             "FROM orden o " +
+             "INNER JOIN servicios s ON o.id_servicios = s.id " +
+             "INNER JOIN estado_orden eo ON o.id_Estado_orden = eo.id " +
+             "INNER JOIN usuarios_orden uo ON o.id_usuarios_orden = uo.id " +
+             "INNER JOIN usuarios uc ON uo.id_usuario_cliente = uc.id " +
+             "INNER JOIN usuarios ut ON uo.id_usuario_trabajador = ut.id " +
+             "INNER JOIN tipo_modalidad tm ON o.id_tipo_modalidad = tm.id " +
+             "WHERE uo.id_usuario_trabajador = ?";;
 
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -169,10 +192,20 @@ public class OrdenDAO {
     // ✅ Listar órdenes por trabajador y fecha
 public static List<Orden> listarOrdenesPorTrabajadorYFecha(int idTrabajador, String fecha) {
     List<Orden> lista = new ArrayList<>();
-    String sql = "SELECT o.id, o.fecha_servicio, o.hora_servicio, id_tipo_modalidad, " +
+    String sql = "SELECT " +
+                 "o.id, " +
+                 "o.fecha_servicio, " +
+                 "o.hora_servicio, " +
+                 "o.id_tipo_modalidad, " +
+                 "tm.nombre AS modalidad_nombre, " +
+                 "o.id_servicios, " +
                  "s.nombre AS servicio_nombre, " +
+                 "o.id_Estado_orden, " +
                  "eo.nombre AS estado_nombre, " +
+                 "o.id_usuarios_orden, " +
+                 "uc.id AS id_usuario, " +
                  "uc.nombre AS usuario_nombre, " +
+                 "ut.id AS id_trabajador, " +
                  "ut.nombre AS trabajador_nombre " +
                  "FROM orden o " +
                  "INNER JOIN servicios s ON o.id_servicios = s.id " +
@@ -180,7 +213,9 @@ public static List<Orden> listarOrdenesPorTrabajadorYFecha(int idTrabajador, Str
                  "INNER JOIN usuarios_orden uo ON o.id_usuarios_orden = uo.id " +
                  "INNER JOIN usuarios uc ON uo.id_usuario_cliente = uc.id " +
                  "INNER JOIN usuarios ut ON uo.id_usuario_trabajador = ut.id " +
+                 "INNER JOIN tipo_modalidad tm ON o.id_tipo_modalidad = tm.id " +
                  "WHERE uo.id_usuario_trabajador = ? AND o.fecha_servicio = ?";
+;
 
     try (Connection con = ConexionDB.getConnection();
          PreparedStatement ps = con.prepareStatement(sql)) {
@@ -301,18 +336,34 @@ public static boolean existeCita(int idTrabajador, String fecha, String hora) {
 
 
 
-    // ✅ Mapper común para Orden
-    private static Orden mapOrden(ResultSet rs) throws SQLException {
-        Orden o = new Orden();
-        o.setId(rs.getInt("id"));
-        o.setFecha(rs.getString("fecha_servicio"));
-        o.setHora(rs.getString("hora_servicio"));
-        o.setServicio_nombre(rs.getString("servicio_nombre"));
-        o.setId_modalidad(rs.getInt("id_tipo_modalidad"));
-        o.setUsuario_nombre(rs.getString("usuario_nombre"));
-        o.setTrabajador_nombre(rs.getString("trabajador_nombre"));
-        o.setEstado_nombre(rs.getString("estado_nombre"));
-        return o;
-    }
+// ✅ Mapper común para Orden
+private static Orden mapOrden(ResultSet rs) throws SQLException {
+    Orden o = new Orden();
+    o.setId(rs.getInt("id"));
+    o.setFecha(rs.getString("fecha_servicio"));
+    o.setHora(rs.getString("hora_servicio"));
+
+    // 🔹 IDs reales
+    o.setId_modalidad(rs.getInt("id_tipo_modalidad"));
+    o.setId_servicio(rs.getInt("id_servicios"));
+    o.setId_estado(rs.getInt("id_Estado_orden"));
+    o.setId_usuarios_orden(rs.getInt("id_usuarios_orden"));
+    o.setId_usuario(rs.getInt("id_usuario"));
+    o.setId_trabajador(rs.getInt("id_trabajador"));
+
+    // 🔹 Nombres
+    o.setModalidad_nombre(rs.getString("modalidad_nombre"));
+    o.setServicio_nombre(rs.getString("servicio_nombre"));
+    o.setEstado_nombre(rs.getString("estado_nombre"));
+    o.setUsuario_nombre(rs.getString("usuario_nombre"));
+    o.setTrabajador_nombre(rs.getString("trabajador_nombre"));
+    
+    // 🔹 Productos
+    List<DetalleOrdenProducto> productos = DetalleOrdenProductoDAO.listarPorOrden(o.getId());
+    o.setProductos(productos != null ? productos : new ArrayList<>());
+
+    return o;
+}
+
 }
 

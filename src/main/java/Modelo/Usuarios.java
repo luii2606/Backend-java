@@ -11,6 +11,7 @@ public class Usuarios {
     private int id_estado_usuarios;
     private String nombreRol;
     private String nombreEstado;
+    private String nombre_tipo_usuario;
 
     // Constructor sin parámetros
     public Usuarios() {}
@@ -46,7 +47,34 @@ public class Usuarios {
         this.nombreEstado = nombreEstado;
     }
 
-    // Getters y setters
+    // ✅ Constructor con rol + estado + tipo_usuario (11 parámetros)
+    public Usuarios(int id, String nombre, String contrasena, String correo,
+                    String telefono, int id_tipo_usuario, int id_roles,
+                    int id_estado_usuarios, String nombreRol,
+                    String nombreEstado, String nombre_tipo_usuario) {
+        this.id = id;
+        this.nombre = nombre;
+        this.contrasena = contrasena;
+        this.correo = correo;
+        this.telefono = telefono;
+        this.id_tipo_usuario = id_tipo_usuario;
+        this.id_roles = id_roles;
+        this.id_estado_usuarios = id_estado_usuarios;
+        this.nombreRol = nombreRol;
+        this.nombreEstado = nombreEstado;
+        this.nombre_tipo_usuario = nombre_tipo_usuario;
+    }
+
+    // Getter y Setter para nombre_tipo_usuario
+    public String getNombre_tipo_usuario() {
+        return nombre_tipo_usuario;
+    }
+
+    public void setNombre_tipo_usuario(String nombre_tipo_usuario) {
+        this.nombre_tipo_usuario = nombre_tipo_usuario;
+    }
+
+    // Resto de getters y setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -77,8 +105,6 @@ public class Usuarios {
     public String getNombreEstado() { return nombreEstado; }
     public void setNombreEstado(String nombreEstado) { this.nombreEstado = nombreEstado; }
 
-
-
     // Comparación por id
     @Override
     public boolean equals(Object obj) {
@@ -89,6 +115,7 @@ public class Usuarios {
         return this.id == other.id;
     }
 }
+
 
 
 

@@ -20,7 +20,7 @@ public class Servicio {
     private double precio;
 
     /** Identificador del rol asociado al servicio (FK hacia roles) */
-    private int id_roles;
+    private int id_tipo_usuario;
 
     // --- Métodos Getter y Setter ---
 
@@ -65,13 +65,13 @@ public class Servicio {
     }
 
     /** Obtiene el ID del rol asociado al servicio */
-    public int getId_roles() {
-        return id_roles;
+    public int getId_tipo_usuario() {
+        return id_tipo_usuario;
     }
 
     /** Asigna un valor al rol asociado al servicio */
-    public void setId_roles(int id_roles) {
-        this.id_roles = id_roles;
+    public void setId_tipo_usuario(int id_tipo_usuario) {
+        this.id_tipo_usuario = id_tipo_usuario;
     }
 }
 

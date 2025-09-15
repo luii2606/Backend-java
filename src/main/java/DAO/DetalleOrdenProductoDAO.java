@@ -11,7 +11,7 @@ import java.util.List;
 public class DetalleOrdenProductoDAO {
 
     public static boolean insertarDetalle(Connection con, DetalleOrdenProducto detalle) throws SQLException {
-        String sqlInsert = "INSERT INTO detalle_orden_producto (id_orden, id_productos, cantidad, subtotal) VALUES (?, ?, ?, ?)";
+        String     sqlInsert = "INSERT INTO detalle_orden_producto (id_orden, id_productos, cantidad, subtotal) VALUES (?, ?, ?, ?)";
         String sqlUpdate = "UPDATE productos SET cantidad = cantidad - ? WHERE id = ? AND cantidad >= ?";
 
         try (
